@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Badge System</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    #form-container {
+        max-width: 400px;
+        margin: 50px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    input {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    #success-message {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    #success-message p {
+        color: #008000;
+        font-size: 18px;
+    }
+
+    #success-message button {
+        margin-top: 10px;
+        background-color: #28a745;
+    }
+
+    #success-message button:hover {
+        background-color: #218838;
+    }
+</style>
+</head>
+<body>
+<div id="form-container">
+    <h1>Badge System</h1>
+    <form id="badge-form">
+        <label for="first-name">First Name:</label>
+        <input type="text" id="first-name" name="first-name" oninput="this.value = this.value.toUpperCase()" required>
+        <label for="last-name">Last Name:</label>
+        <input type="text" id="last-name" name="last-name" oninput="this.value = this.value.toUpperCase()" required>
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" name="email" required>
+        <label for="badge-id">Badge ID:</label>
+        <input type="text" id="badge-id" name="badge-id" value="" oninput="this.value = this.value.toUpperCase()" required>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<div id="success-message">
+    <p>Check your email for your badge.</p>
+    <button onclick="goBack()">Go Back Home</button>
+</div>
+
+<script>
+    document.getElementById("badge-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const requestData = {};
+        formData.forEach((value, key) => {
+            requestData[key] = value;
+        });
+        
+        fetch('https://prod-34.westeurope.logic.azure.com:443/workflows/cb144638eb1c45c6a656b17485db84df/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=GjuQFmHSRo9KZ0sGCgi-dClEoJuEVCZaANOppSCgKWE', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById("form-container").style.display = "none";
+                document.getElementById("success-message").style.display = "block";
+            } else {
+                alert('Failed to submit form.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred, please try again later.');
+        });
+    });
+
+    function goBack() {
+        window.location.href = "index.html"; 
+    }
+</script>
+</body>
+</html>
